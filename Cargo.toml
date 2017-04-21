@@ -1,0 +1,14 @@
+[package]
+name = "postgres-service"
+version = "0.1.1"
+authors = ["Charles Samuels <charles@derkarl.org>"]
+description = "Parse Postgres service configuration files"
+documentation = "https://github.com/njaard/postgres-service/blob/master/Readme.md"
+repository = "https://github.com/njaard/postgres-service"
+readme = "Readme.md"
+keywords = [ "database", "sql", "postgres", "postgresql" ]
+license = "BSD-2-Clause"
+
+[dependencies]
+rust-ini = "^0.10"
+postgres-shared = "^0.2"
