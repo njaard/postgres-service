@@ -47,38 +47,27 @@ fn build_from_section(section : &Properties)
 
 	for (k,v) in section
 	{
-		if k == "host"
+		match k.as_str()
 		{
-			host = Some(
-				if v.len()>0 && v.starts_with('/')
-					{ postgres_shared::params::Host::Unix(std::path::PathBuf::from(v)) }
-				else
-					{ postgres_shared::params::Host::Tcp(v.clone()) }
-			);
-		}
-		else if k == "hostaddr"
-		{
-			host = Some(postgres_shared::params::Host::Tcp(v.clone()));
-		}
-		else if k == "port"
-		{
-			builder.port(v.parse().unwrap());
-		}
-		else if k == "dbname"
-		{
-			builder.database(v);
-		}
-		else if k == "user"
-		{
-			username = Some(v.clone());
-		}
-		else if k == "password"
-		{
-			password = Some(v.clone());
-		}
-		else
-		{
-			builder.option(k, v);
+			"host" =>
+				host = Some(
+					if v.len()>0 && v.starts_with('/')
+						{ postgres_shared::params::Host::Unix(std::path::PathBuf::from(v)) }
+					else
+						{ postgres_shared::params::Host::Tcp(v.clone()) }
+				),
+			"hostaddr" => 
+				host = Some(postgres_shared::params::Host::Tcp(v.clone())),
+			"port" =>
+				{ builder.port(v.parse().unwrap()); },
+			"dbname" =>
+				{ builder.database(v); },
+			"user" =>
+				username = Some(v.clone()),
+			"password" =>
+				password = Some(v.clone()),
+			_ =>
+				{ builder.option(k, v); },
 		}
 	}
 
