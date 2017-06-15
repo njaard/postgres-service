@@ -1,4 +1,4 @@
-extern crate postgres_shared;
+extern crate postgres;
 extern crate ini;
 
 use ini::Ini;
@@ -6,8 +6,8 @@ use ini::ini::Properties;
 
 pub struct ServiceBuilder
 {
-	pg_builder : postgres_shared::params::Builder,
-	maybe_host : Option<postgres_shared::params::Host>,
+	pg_builder : postgres::params::Builder,
+	maybe_host : Option<postgres::params::Host>,
 }
 
 impl ServiceBuilder
@@ -19,13 +19,13 @@ impl ServiceBuilder
 	}
 }
 
-impl postgres_shared::params::IntoConnectParams for ServiceBuilder
+impl postgres::params::IntoConnectParams for ServiceBuilder
 {
 	fn into_connect_params(mut self)
-	-> Result<postgres_shared::params::ConnectParams, Box<std::error::Error + Sync + Send>>
+	-> Result<postgres::params::ConnectParams, Box<std::error::Error + Sync + Send>>
 	{
 		let host = self.maybe_host.unwrap_or(
-			postgres_shared::params::Host::Unix(
+			postgres::params::Host::Unix(
 				std::path::PathBuf::from("/var/run/postgresql")
 			)
 		);
@@ -38,11 +38,11 @@ impl postgres_shared::params::IntoConnectParams for ServiceBuilder
 fn build_from_section(section : &Properties)
 -> ServiceBuilder
 {
-	let mut host : Option<postgres_shared::params::Host> = None;
+	let mut host : Option<postgres::params::Host> = None;
 	let mut username : Option<String> = None;
 	let mut password : Option<String> = None;
 
-	let mut builder = postgres_shared::params::Builder::new();
+	let mut builder = postgres::params::Builder::new();
 
 
 	for (k,v) in section
@@ -52,12 +52,12 @@ fn build_from_section(section : &Properties)
 			"host" =>
 				host = Some(
 					if v.len()>0 && v.starts_with('/')
-						{ postgres_shared::params::Host::Unix(std::path::PathBuf::from(v)) }
+						{ postgres::params::Host::Unix(std::path::PathBuf::from(v)) }
 					else
-						{ postgres_shared::params::Host::Tcp(v.clone()) }
+						{ postgres::params::Host::Tcp(v.clone()) }
 				),
 			"hostaddr" => 
-				host = Some(postgres_shared::params::Host::Tcp(v.clone())),
+				host = Some(postgres::params::Host::Tcp(v.clone())),
 			"port" =>
 				{ builder.port(v.parse().unwrap()); },
 			"dbname" =>
