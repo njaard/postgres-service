@@ -10,5 +10,5 @@ keywords = [ "database", "sql", "postgres", "postgresql" ]
 license = "BSD-2-Clause"
 
 [dependencies]
-rust-ini = "^0.10"
+rust-ini = "^0.13"
 postgres = "^0.15"
