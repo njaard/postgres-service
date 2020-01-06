@@ -1,90 +1,51 @@
-extern crate postgres;
-extern crate ini;
-
 use ini::Ini;
 use ini::ini::Properties;
+use postgres::config::Config;
 
-pub struct ServiceBuilder
+fn build_from_section(section: &Properties)
+	-> Config
 {
-	pg_builder : postgres::params::Builder,
-	maybe_host : Option<postgres::params::Host>,
-}
+	let mut username: Option<String> = None;
+	let mut password: Option<String> = None;
 
-impl ServiceBuilder
-{
-	pub fn user(mut self, user : &str) -> ServiceBuilder
-	{
-		self.pg_builder.user(user, None);
-		self
-	}
-}
+	let mut builder = Config::new();
+	let mut options = String::new();
 
-impl postgres::params::IntoConnectParams for ServiceBuilder
-{
-	fn into_connect_params(mut self)
-	-> Result<postgres::params::ConnectParams, Box<std::error::Error + Sync + Send>>
-	{
-		let host = self.maybe_host.unwrap_or(
-			postgres::params::Host::Unix(
-				std::path::PathBuf::from("/var/run/postgresql")
-			)
-		);
-
-		Ok(self.pg_builder.build(host))
-	}
-}
-
-
-fn build_from_section(section : &Properties)
--> ServiceBuilder
-{
-	let mut host : Option<postgres::params::Host> = None;
-	let mut username : Option<String> = None;
-	let mut password : Option<String> = None;
-
-	let mut builder = postgres::params::Builder::new();
-
-
-	for (k,v) in section
+	for (k,v) in section.iter()
 	{
 		match k.as_str()
 		{
 			"host" =>
-				host = Some(
-					if v.len()>0 && v.starts_with('/')
-						{ postgres::params::Host::Unix(std::path::PathBuf::from(v)) }
-					else
-						{ postgres::params::Host::Tcp(v.clone()) }
-				),
+				{ builder.host(v); },
 			"hostaddr" => 
-				host = Some(postgres::params::Host::Tcp(v.clone())),
+				{ builder.host(v); },
 			"port" =>
 				{ builder.port(v.parse().unwrap()); },
 			"dbname" =>
-				{ builder.database(v); },
+				{ builder.dbname(v); },
 			"user" =>
 				username = Some(v.clone()),
 			"password" =>
 				password = Some(v.clone()),
 			_ =>
-				{ builder.option(k, v); },
+				options += &format!("{}={} ", k, v),
 		}
 	}
 
+	if !options.is_empty()
+		{ builder.options(&options); }
+
 	if let Some(username) = username
-		{ builder.user(&username, password.as_ref().map(|x| x.as_ref())); }
+		{ builder.user(&username); }
+	if let Some(password) = password
+		{ builder.password(&password); }
 
-	ServiceBuilder
-	{
-		pg_builder : builder,
-		maybe_host : host,
-	}
-
+	builder
 }
 
 pub fn load_connect_params(
 	service_name : &str
-) -> Option<ServiceBuilder>
+) -> Option<Config>
 {
 	if let Ok(home) = std::env::var("HOME")
 	{

@@ -10,12 +10,9 @@ This is for use with the [Postgres crate](https://crates.io/crates/postgres).
 This example uses the service name `mydb` and overrides
 the `user` value, then makes the connection.
 
-	extern crate postgres_service;
-	extern crate postgres;
-
-	let conn = postgres::Connection::connect(
-		postgres_service::load_connect_params("mydb")
-			.unwrap().user("your_user_name"),
-		postgres::TlsMode::None
-	).unwrap();
+	let conn = postgres_service::load_connect_params("mydb")
+		.expect("unable to find configuration")
+		.user("your_user_name")
+		.connect(postgres::NoTls)
+		.expect("unable to connect");
 
