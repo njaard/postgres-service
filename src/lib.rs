@@ -1,5 +1,5 @@
 use ini::Ini;
-use ini::ini::Properties;
+use ini::Properties;
 use postgres::config::Config;
 
 fn build_from_section(section: &Properties)
@@ -13,7 +13,7 @@ fn build_from_section(section: &Properties)
 
 	for (k,v) in section.iter()
 	{
-		match k.as_str()
+		match k
 		{
 			"host" =>
 				{ builder.host(v); },
@@ -24,9 +24,9 @@ fn build_from_section(section: &Properties)
 			"dbname" =>
 				{ builder.dbname(v); },
 			"user" =>
-				username = Some(v.clone()),
+				username = Some(v.to_owned()),
 			"password" =>
-				password = Some(v.clone()),
+				password = Some(v.to_owned()),
 			_ =>
 				options += &format!("{}={} ", k, v),
 		}
