@@ -1,7 +1,5 @@
 //! Parse Postgres service configuration files
 
-#![feature(doc_cfg)]
-
 use ini::Properties;
 
 fn build_from_section(section: &Properties) -> tokio_postgres::config::Config {
