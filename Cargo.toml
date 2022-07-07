@@ -11,6 +11,6 @@ license = "BSD-2-Clause"
 edition="2018"
 
 [dependencies]
-rust-ini = "0.17"
+rust-ini = "0.18"
 postgres = { version="^0.19", default-features=false }
 tokio-postgres = "0.7.5"
