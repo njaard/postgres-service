@@ -71,7 +71,7 @@ pub mod tokio {
 	pub fn load_connect_params(service_name: &str) -> Option<tokio_postgres::config::Config> {
 		if let Ok(home) = std::env::var("HOME") {
 			if let Ok(ini) = Ini::load_from_file(home + "/" + ".pg_service.conf") {
-				if let Some(section) = ini.section(Some(service_name.clone())) {
+				if let Some(section) = ini.section(Some(service_name)) {
 					return Some(build_from_section(section));
 				}
 			}

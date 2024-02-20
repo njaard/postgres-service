@@ -1,6 +1,6 @@
 [package]
 name = "postgres-service"
-version = "0.19.3"
+version = "0.19.4"
 authors = ["Charles Samuels <charles@derkarl.org>"]
 description = "Parse Postgres service configuration files"
 documentation = "https://github.com/njaard/postgres-service/blob/master/Readme.md"
@@ -11,6 +11,6 @@ license = "BSD-2-Clause"
 edition="2018"
 
 [dependencies]
-rust-ini = "0.18"
+rust-ini = "0.20"
 postgres = { version="^0.19", default-features=false }
-tokio-postgres = "0.7.5"
+tokio-postgres = {version="0.7.5", default-features=false }
